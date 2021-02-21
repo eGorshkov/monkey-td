@@ -17,7 +17,7 @@ export interface Position {
   y: number;
 }
 
-export type EnemyType = "default" | "bigger";
+export type EnemyType = "default" | "bigger" | 'faster';
 
 export class Enemy {
   lastX = 0;
@@ -66,7 +66,11 @@ export class Enemy {
   }
 
   get alive(): boolean {
-    return Boolean(this.health);
+    return this.health > 0;
+  }
+
+  get isEnded(): boolean {
+    return !this.alive || !this.currentMove;
   }
 
   render() {

@@ -4,6 +4,9 @@ import { Tower } from "./towers/tower";
 import { getGridColumnIndex, getGridRowIndex } from "./helpers/common";
 import { ILevel } from "./constants/levels";
 import { Game } from "./game";
+import { AttackerTower } from "./towers/attacker-tower";
+import { callMenu, removeAll } from "./ui/menu";
+import { TOWERS } from "./constants/towers";
 
 enum COLORS {
   block = "#CCC7B9",
@@ -30,9 +33,9 @@ class Cell {
     this.ctx = ctx;
   }
 
-  createTower() {
+  createTower(type: keyof typeof TOWERS) {
     this.type = "tower";
-    this.tower = new Tower(this.rowIndex, this.cellIndex);
+    this.tower = new TOWERS[type]._class(this.rowIndex, this.cellIndex);
   }
 }
 
@@ -70,9 +73,17 @@ export class Grid {
           C.font = "50px Verdana, sans-serif";
           C.fillStyle = "red";
           C.fillText(
-            "T",
-              (GRID_CELL_WIDTH * cellIndex) + GRID_CELL_WIDTH * .25,
-              (GRID_CELL_HEIGHT * lineIndex) + GRID_CELL_HEIGHT * .9
+            cell.tower.type[0].toUpperCase() + (cell.tower.upgradeLevel + 1),
+            GRID_CELL_WIDTH * cellIndex + GRID_CELL_WIDTH * 0.25,
+            GRID_CELL_HEIGHT * lineIndex + GRID_CELL_HEIGHT * 0.9
+          );
+        } else {
+          C.font = "10px Verdana, sans-serif";
+          C.fillStyle = "red";
+          C.fillText(
+            `r-${lineIndex} c-${cellIndex}`,
+            GRID_CELL_WIDTH * cellIndex + GRID_CELL_WIDTH * 0.25,
+            GRID_CELL_HEIGHT * lineIndex + GRID_CELL_HEIGHT * 0.9
           );
         }
       })
@@ -93,10 +104,7 @@ export class Grid {
     C.stroke();
     C.closePath();
 
-    if (cell.type === "tower") {
-      cell.tower?.findTarget(level);
-      cell.tower?.shot();
-    }
+    if (cell.type === "tower") cell.tower?.action(level);
   }
 
   private listenCellClick(game: Game) {
@@ -110,9 +118,11 @@ export class Grid {
         this.activeCell = cell;
       }
 
-      if (cell.type === "block" && game.ui.gold >= 100) {
-        cell.createTower();
-        game.ui.removeGold(100);
+      if (cell.type !== "road") {
+        removeAll();
+        callMenu(e, cell);
+      } else {
+        removeAll();
       }
     };
   }

@@ -1,43 +1,48 @@
-import { _canvas, C } from "./canvas";
-import Engine from "./engine";
+import { _canvas, C } from "../canvas";
+import Engine from "../engine";
+import {callMenu} from './menu';
 
 export class Ui {
-  private lifeValue = 100;
-  private goldValue = 100;
+  private static lifeValue = 100;
+  private static goldValue = 300;
 
-  get _render() {
+  static get _render() {
     return this.render.bind(this);
   }
 
-  get gold(): number {
+  static get gold(): number {
     return this.goldValue;
   }
 
   constructor() {}
 
-  damage(v) {
+  static restore() {
+    this.lifeValue = 100;
+    this.goldValue = 300;
+  }
+
+  static damage(v) {
     this.lifeValue -= v;
     if (!this.lifeValue) {
-      debugger;
       alert("LOL U DIED! LOL! LOL! U DIED!");
       Engine.stop();
     }
   }
 
-  removeGold(value: number) {
+  static removeGold(value: number) {
     this.goldValue -= value;
   }
 
-  addGold(value: number) {
+  static addGold(value: number) {
     this.goldValue += value;
   }
 
-  private render() {
+  private static render() {
     this.renderLife();
     this.renderGold();
   }
 
-  private renderLife() {
+  private static renderLife() {
     C.font = "bold 20px Verdana, sans-serif";
     C.shadowBlur = 2;
     C.shadowOffsetX = 2;
@@ -46,7 +51,7 @@ export class Ui {
     C.fillText(`LIFE: ${this.lifeValue}`, 40, 100);
   }
 
-  private renderGold() {
+  private static renderGold() {
     C.font = "bold 20px Verdana, sans-serif";
     C.shadowBlur = 2;
     C.shadowOffsetX = 2;

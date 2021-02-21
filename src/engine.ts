@@ -47,7 +47,6 @@ export default class Engine {
   }
 
   static stop() {
-    setTimeout(() => {
       this.rendering = false;
       if (this.animationReq) {
         cancelAnimationFrame(this.animationReq);
@@ -58,6 +57,16 @@ export default class Engine {
         "Frames count": this.framesCount,
         "Frame time": this.frameTime,
       });
-    });
+  }
+
+  static restore() {
+    this.stop();
+
+    this.tasks = [];
+    this.rendering = false;
+    this.framesCount = 0;
+    this.frameTime = 0;
+    this.maxTasks = 0;
+    this.animationReq = null;
   }
 }

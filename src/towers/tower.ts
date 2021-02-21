@@ -1,58 +1,72 @@
-import { Enemy, Position } from "../enemies/enemy";
-import { between } from "../helpers/common";
-import {ILevel} from '../constants/levels';
+import { Position } from "../enemies/enemy";
+import { ILevel } from "../constants/levels";
+import { TOWERS } from "../constants/towers";
 
-interface ITower {
+export type ITowerUpgrade<T = ITower> = { [k in keyof T]: number } & {
+  gold: number;
+};
+
+export type ITowerBuffs<T = ITower> = Map<keyof T, any>;
+
+export interface ITower {
   range: {
     from: Position;
     to: Position;
   };
   vision: number;
+  type: keyof typeof TOWERS;
+  upgradeLevel: number;
+  upgrades: ITowerUpgrade[];
+  buffs: ITowerBuffs;
 }
 
-export class Tower implements ITower {
+export abstract class Tower implements ITower {
   range = null;
   vision = 1;
-  damage = 1;
-  reload = 500;
-  target: Enemy = null;
-  timestamp = performance.now();
+  upgradeLevel = -1;
 
-  get isReady(): boolean {
-    return performance.now() - this.timestamp >= this.reload;
+  cellIndex = -1;
+  rowIndex = -1;
+
+  abstract upgrades;
+  abstract buffs;
+  abstract type: keyof typeof TOWERS;
+
+  protected constructor(rowIndex, cellIndex) {
+    this.rowIndex = rowIndex;
+    this.cellIndex = cellIndex;
+    this.updateRange();
   }
 
-  constructor(rowIndex, cellIndex) {
-    this.setRange(rowIndex, cellIndex);
+  get canUpgrade(): boolean {
+    return !!this.upgrades?.length || this.upgradeLevel < this.upgrades.length;
   }
 
-  private setRange(rowIndex: any, cellIndex: any) {
+  get nextUpgrade(): ITowerUpgrade {
+    return this.upgrades[this.upgradeLevel + 1];
+  }
+
+  public upgrade(): void {
+    if (this.canUpgrade) {
+      this.upgradeLevel++;
+      this.upgradeTower(this.upgradeLevel);
+      this.updateRange();
+    }
+  }
+
+  private updateRange() {
     this.range = {
       from: {
-        x: cellIndex - this.vision,
-        y: rowIndex - this.vision,
+        x: this.cellIndex - this.vision,
+        y: this.rowIndex - this.vision,
       },
       to: {
-        x: cellIndex + this.vision,
-        y: rowIndex + this.vision,
+        x: this.cellIndex + this.vision,
+        y: this.rowIndex + this.vision,
       },
     };
   }
 
-  findTarget(level: ILevel) {
-    this.target = level.enemies.find((enemy) => {
-      return (
-        enemy.alive &&
-        between(enemy.rowIndex, this.range.from.y, this.range.to.y) &&
-        between(enemy.columnIndex, this.range.from.x, this.range.to.x)
-      );
-    });
-  }
-
-  shot() {
-    if (this.target?.alive && this.isReady) {
-      --this.target.health;
-      this.timestamp = performance.now();
-    }
-  }
+  abstract action(level: ILevel): void;
+  abstract upgradeTower(upgradeLevel: number): void;
 }
