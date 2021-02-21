@@ -1,0 +1,57 @@
+Arguments: 
+  /usr/local/bin/node /usr/local/Cellar/yarn/1.22.10/libexec/bin/yarn.js install
+
+PATH: 
+  /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/VMware Fusion.app/Contents/Public:/Users/shkovegor/Desktop/projects/monkey-td-js/node_modules/.bin
+
+Yarn version: 
+  1.22.10
+
+Node version: 
+  14.15.1
+
+Platform: 
+  darwin x64
+
+Trace: 
+  SyntaxError: /Users/shkovegor/Desktop/projects/monkey-td-js/package.json: Unexpected token } in JSON at position 898
+      at JSON.parse (<anonymous>)
+      at /usr/local/Cellar/yarn/1.22.10/libexec/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/usr/local/Cellar/yarn/1.22.10/libexec/lib/cli.js:310:30)
+      at /usr/local/Cellar/yarn/1.22.10/libexec/lib/cli.js:321:13
+
+npm manifest: 
+  {
+    "name": "monkey-td-js",
+    "version": "1.0.0",
+    "scripts": {
+      "start": "rollup -c -w",
+      "build": "rollup -c && cd build && html-minifier --collapse-whitespace --remove-tag-whitespace --minify-css true dev.html > index.html && advzip -a build.zip index.html && advzip -z4 -i 99 build.zip",
+      "sprite": "node sprite/sprite && advpng -z4 src/asset/*.png"
+    },
+    "devDependencies": {
+      "@rollup/plugin-image": "^2.0.5",
+      "@rollup/plugin-typescript": "^8.0.0",
+      "@types/node": "^14.14.13",
+      "advpng-bin": "^5.0.1",
+      "advzip-bin": "^2.0.0",
+      "dotenv": "^8.2.0",
+      "free-tex-packer-core": "^0.3.2",
+      "glob": "^7.1.6",
+      "html-minifier": "^4.0.0",
+      "rollup": "^2.35.0",
+      "rollup-plugin-glsl": "^1.3.0",
+      "rollup-plugin-html-bundle": "0.0.3",
+      "rollup-plugin-terser": "^7.0.2",
+      "tslib": "^2.0.3",
+      "prettier": "^2.2.1",
+      "typescript": "^4.1.3"
+    },
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
